@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { handleEditComment } from '../actions/comments'
+import { CommentForm, validationSchema } from '../components/CommentForm';
+import { Card,CardContent } from '@material-ui/core';
 
 class EditComment extends Component {  
     componentDidMount(){
@@ -13,7 +15,7 @@ class EditComment extends Component {
         console.log(values);
         setTimeout(() => {
             const {dispatch, comment, selectedCategory} = this.props;
-            const {body} = values.comment
+            const {body} = values
             dispatch(handleEditComment(comment.id, body, comment.parentId))
                 .then((comment) => {
                     setSubmitting(false);
@@ -27,38 +29,16 @@ class EditComment extends Component {
         const {comment} = this.props
         console.log('edit ',this.props);
         return (
-            <div>
-                {this.props.loading === true
-                ? null
-                : <div>
-                    {comment.author}
-                    <Formik
-                        initialValues={{
-                            comment:{
-                                body:comment.body,
-                            }
-                        }}
-                        validation={values => {
-                            let errors = {};
-                            if(!values.comment.body){
-                                errors.comment.body = 'Required';
-                            }
-                            return errors;
-                        }}
+            <Card>
+                <CardContent>
+                    <Formik 
                         onSubmit={this.handleSubmit}
-                    >
-                            {({ isSubmitting }) => (
-                                <Form>
-                                    <Field type='textArea' name='comment.body' placeholder='Write your comment here!'/>
-                                    <ErrorMessage name='comment.body' component='div' />
-                                    <button type='submit' disabled={isSubmitting}>
-                                        Edit
-                                    </button>
-                                </Form>
-                            )}
-                    </Formik>
-                </div>}
-            </div>
+                        render={props => <CommentForm {...props} edit={true}/>}
+                        initialValues={{author:comment.author, body:comment.body}}
+                        validationSchema={validationSchema}
+                    />
+                </CardContent>
+            </Card>
         )
     }
 }

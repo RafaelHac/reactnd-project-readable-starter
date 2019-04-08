@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { handleAddComment } from '../actions/comments'
+import { handleAddComment } from '../actions/comments';
+import { CommentForm, validationSchema } from '../components/CommentForm';
+import { Card,CardContent } from '@material-ui/core';
 
 class NewComment extends Component {  
     handleSubmit = (values, { setSubmitting, resetForm }) => {
-        console.log(values);
+        const {body,author} = values;
         setTimeout(() => {
-            this.props.dispatch(handleAddComment(values.comment, this.props.postId))
+            this.props.dispatch(handleAddComment({body,author}, this.props.postId))
                 .then((comment) => {
                     setSubmitting(false);
                     resetForm();
@@ -19,39 +21,16 @@ class NewComment extends Component {
 
     render() {
         return (
-            <div>
-                <Formik
-                    initialValues={{
-                        comment:{
-                            author: '',
-                            body:'',
-                        }
-                    }}
-                    validation={values => {
-                        let errors = {};
-                        if(values.comment.author === ''){
-                            errors.comment.author = 'Required';
-                        }
-                        if(!values.comment.body){
-                            errors.comment.body = 'Required';
-                        }
-                        return errors;
-                    }}
-                    onSubmit={this.handleSubmit}
-                >
-                        {({ isSubmitting }) => (
-                            <Form>
-                                <Field type='text' name='comment.author' placeholder='Name' label='Author'/>
-                                <ErrorMessage name='comment.author' component='div' />
-                                <Field type='textArea' name='comment.body' placeholder='Write your comment here!'/>
-                                <ErrorMessage name='comment.body' component='div' />
-                                <button type='submit' disabled={isSubmitting}>
-                                    Add New Comment
-                                </button>
-                            </Form>
-                        )}
-                    </Formik>
-            </div>
+            <Card>
+                <CardContent>
+                    <Formik 
+                        onSubmit={this.handleSubmit}
+                        render={props => <CommentForm {...props}/>}
+                        initialValues={{author:'', body:''}}
+                        validationSchema={validationSchema}
+                    />
+                </CardContent>
+            </Card>
         )
     }
 }

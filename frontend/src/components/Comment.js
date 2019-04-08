@@ -5,6 +5,7 @@ import { FaAngleDown, FaAngleUp, FaRegTrashAlt, FaRegEdit } from 'react-icons/fa
 import { formatDate } from '../utils/helpers';
 import { UP_VOTE, DOWN_VOTE } from '../actions/shared';
 import { handleDeleteComment, handleDownVoteComment, handleUpVoteComment } from '../actions/comments';
+import { Grid, Card ,CardContent, Typography } from '@material-ui/core';
 
 class Comment extends Component {
     handleDelete = () => {
@@ -35,26 +36,43 @@ class Comment extends Component {
         } = comment
 
         return (
-            <div className = 'comment'>
-                <div className='comment-score'>
-                    <FaAngleUp className='up-vote-icon' onClick={() => this.handleVote(UP_VOTE)}/>
-                        <span>{voteScore}</span>
-                    <FaAngleDown className='down-vote-icon' onClick={() => this.handleVote(DOWN_VOTE)}/>
-                </div>
-                <div className='comment-info'>
-                    <div>
-                        <p>{body}</p>
-                        <div className = 'comment-date'>{formatDate(timestamp)}</div>
-                        <div className = 'comment-author'>Posted by {author}</div>
-                    </div>
-                </div>
-                <div className='comment-options'>
-                    <FaRegTrashAlt className='delete-comment' onClick = {() => this.handleDelete()}/>
-                    <Link to={`/${selectedCategory}/${parentId}/${id}`}>
-                        <FaRegEdit className='edit-post'/>
-                    </Link>
-                </div>
-            </div>
+            <Card>
+                <CardContent>
+                    <Grid container direction='line'>
+                        <Grid container xs={2} direction='column' align='stretch'>
+                            <Grid item align='center'>
+                                <FaAngleUp className='up-vote-icon' onClick={() => this.handleVote(UP_VOTE)}/>
+                            </Grid>
+                            <Grid item align='center'>
+                                <span>{voteScore}</span>
+                            </Grid>
+                            <Grid item align='center'>
+                                <FaAngleDown className='down-vote-icon' onClick={() => this.handleVote(DOWN_VOTE)}/>
+                            </Grid>
+                        </Grid>
+                        <Grid item xs={8}>
+                            <Typography component="p">
+                                    {body}
+                            </Typography>
+                            <Typography color="textSecondary">
+                                Posted by {author} in {formatDate(timestamp)}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={2}>
+                            <Grid item align='center'>
+                                <FaRegTrashAlt className='delete-post' onClick = {() => this.handleDelete()}/>
+                            </Grid>
+                            <Grid item align='center'>
+                                <Link to={`/${selectedCategory}/${parentId}/${id}`}>
+                                    <FaRegEdit className='edit-post'/>
+                                </Link>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </CardContent>
+            </Card>
+                    
+           
         )
     }
 }

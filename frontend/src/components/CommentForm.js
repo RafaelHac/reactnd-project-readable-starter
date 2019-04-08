@@ -3,16 +3,13 @@ import { Button, TextField, Select, MenuItem, Input, InputLabel, FormControl } f
 import { object, string } from "yup";
 
 export const validationSchema = object({
-    title: string("Enter Title of Post")
-        .required("Title is required"),
-    category: string("Choose category")
-        .required("You must choose a category")
+    body: string("Enter comment")
+        .required("Comment content is required"),
 });
 
-export const PostForm = (props) => {
+export const CommentForm = (props) => {
     const {
-        values: { author, body, category, title },
-        categories,
+        values: { author, body },
         errors,
         touched,
         handleSubmit,
@@ -29,34 +26,6 @@ export const PostForm = (props) => {
     };
     return (
    <form onSubmit={handleSubmit}>
-     <TextField
-       id="title"
-       name="title"
-       label="Title"
-       value={title}
-       helperText={touched.title ? errors.title : ""}
-       error={touched.title && Boolean(errors.title)}
-       onChange={change.bind(null, "title")}
-       fullWidth
-     />
-
-     <InputLabel shrink htmlFor="age-label-placeholder">
-            Category
-    </InputLabel>
-     <Select
-       id="category"
-       name="category"
-       value={category}
-       input={<Input name="category" id="category-label-placeholder" disabled={edit} />}
-       onChange={change.bind(null, "category")}
-       fullWidth
-       label="Category"
-     >
-        {Object.values(categories).map((c) => 
-            <MenuItem value={c.path} key={c.path}>{c.name}</MenuItem>
-        )}
-     </Select>
-
      <TextField
        id="author"
        name="author"
@@ -83,7 +52,7 @@ export const PostForm = (props) => {
        color="primary"
        disabled={!isValid}
      >
-       {edit ? "Edit" : "Add Post"}
+       {edit ? "Edit" : "Add Comment"}
      </Button>
    </form>
  );

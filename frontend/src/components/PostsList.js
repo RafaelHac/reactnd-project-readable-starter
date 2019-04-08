@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { handleReceivePosts } from '../actions/posts';
-import { Grid, Typography } from '@material-ui/core';
+import { Grid, Typography, GridCell, Card, Paper } from '@material-ui/core';
 import Post from './Post';
 import Sorting from './Sorting';
 
@@ -30,16 +30,15 @@ class PostsList extends Component{
                         </Typography>
                     </Grid>
                     <Grid item xs={12} md={2}><Sorting/></Grid>
-                    <ul className='post-list'>
-                        {console.log(posts)}
+                    <Grid container spacing={24}  className='post-list' direction='column' align='flex'>
                         {posts !== undefined && 
                             posts.filter((post) => post.deleted === false)
                                 .map((post) => (
-                                    <li key={post.id}>
-                                        <Post id={post.id}/>
-                                    </li>
+                                    <Grid item key={post.id}>
+                                            <Post id={post.id}/>
+                                    </Grid>
                                 ))}
-                    </ul>
+                    </Grid>
                 </Grid>
             </div>
         )
