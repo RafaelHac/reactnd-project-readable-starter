@@ -2,19 +2,18 @@ import * as API from '../utils/PostsAPI';
 
 export const RECEIVE_CATEGORIES = 'RECEIVE_CATEGORIES';
 
-export function receiveCategories ({ categories }, categorySelected) {
-  console.log(categories);
+export function receiveCategories ({ categories }, selectedCategory = '') {
   return {
     type: RECEIVE_CATEGORIES,
     categories,
-    categorySelected
+    selectedCategory
   }
 };
 
-export const handleReceiveCategories = (categorySelected = '') => {
+export const handleReceiveCategories = (selectedCategory = '') => {
   return (dispatch) => {
     return API.getCategories()
-      .then((categories) => dispatch(receiveCategories(categories, categorySelected)));
+      .then((categories) => dispatch(receiveCategories(categories, selectedCategory)));
   };
 };
 

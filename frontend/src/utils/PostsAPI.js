@@ -31,7 +31,7 @@ export const addPost = (post) =>
         ...headers,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ post })
+      body: JSON.stringify({ ...post, timestamp: Date.now() })
     }).then(res => res.json());
 
 export const getPostById = (id) => 
@@ -55,7 +55,7 @@ export const editPost = (id, title, body) =>
         ...headers,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ title, body, timestamp: Date.now() })
+      body: JSON.stringify({ id, title, body, timestamp: Date.now() })
     }).then(res => res.json());
 
 export const deletePost = (id) =>
@@ -78,7 +78,7 @@ export const addComment = (comment) =>
         ...headers,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ comment })
+      body: JSON.stringify({ ...comment, timestamp: Date.now() })
     }).then(res => res.json());
 
 export const getCommentById = (id) =>

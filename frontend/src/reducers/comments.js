@@ -1,14 +1,38 @@
-import { RECEIVE_COMMENTS, VOTE_COMMENT } from '../actions/comments'
-import { DOWN_VOTE, UP_VOTE } from '../utils/helpers';
+import { 
+  RECEIVE_COMMENTS,
+  ADD_COMMENT,
+  EDIT_COMMENT,
+  DELETE_COMMENT,
+  VOTE_COMMENT 
+} from '../actions/comments'
+import { UP_VOTE, DOWN_VOTE } from '../actions/shared';
 
 export default function comments (state = {}, action) {
   switch(action.type) {
     case RECEIVE_COMMENTS :
-      return {
-        ... action.comments,
-      }
+      return [
+        ...action.comments,
+      ]
+    case ADD_COMMENT: 
+        return [
+            ...state,
+            Object.assign({}, action.comment)
+        ];
+    case EDIT_COMMENT:
+        return state.map((comment) => {
+            if(comment.id === action.id){
+                comment.body = action.body;
+            }
+            return comment;
+        });
+    case DELETE_COMMENT:
+        return state.filter((comment) => {
+            if(comment.id !== action.id){
+                return comment;
+            }
+        });
     case VOTE_COMMENT :
-      return Object.values(state).map((comment) => {
+      return state.map((comment) => {
         if(comment.id === action.id){
           switch(action.vote){
             case UP_VOTE:

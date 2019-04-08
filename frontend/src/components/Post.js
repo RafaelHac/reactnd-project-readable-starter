@@ -1,24 +1,32 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
-import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
-import { formatDate, UP_VOTE, DOWN_VOTE } from '../utils/helpers';
-import { handleDownVotePost, handleUpVotePost } from '../actions/posts';
+import { FaAngleDown, FaAngleUp, FaRegTrashAlt } from 'react-icons/fa';
+import { formatDate } from '../utils/helpers';
+import { UP_VOTE, DOWN_VOTE } from '../actions/shared';
+import { handleDeletePost, handleDownVotePost, handleUpVotePost } from '../actions/posts';
 
 class Post extends Component {
     handleVote = (vote) => {
-        const {id, dispatch } = this.props;
+        const { id, dispatch, sort } = this.props;
         switch(vote){
             case UP_VOTE:
-                return dispatch(handleUpVotePost(id));
+                return dispatch(handleUpVotePost(id, sort));
             case DOWN_VOTE:
-                return dispatch(handleDownVotePost(id));
+                return dispatch(handleDownVotePost(id, sort));
+            default:
+                return;
         }
+    }
+
+    handleDelete = () => {
+        const {post, dispatch } = this.props;
+        console.log(this.props);
+        dispatch(handleDeletePost(post.id));
     }
 
     render() {
         const { post } = this.props
-        console.log(post);
         if (post === null) {
             return <p>This Post doesn't exist</p>
         }
@@ -34,7 +42,7 @@ class Post extends Component {
                         <span>{voteScore}</span>
                     <FaAngleDown className='down-vote-icon' onClick={() => this.handleVote(DOWN_VOTE)}/>
                 </div>
-                <Link to={`/${category}/post/${id}`} className='post'>
+                <Link to={`/${category}/${id}`} className='post'>
                     <div className='post-info'>
                         <div>
                             <span className = 'post-title'>{title}</span>
@@ -47,18 +55,22 @@ class Post extends Component {
                         </div>
                     </div>
                 </Link>
+                <div className='post-delete'>
+                    <FaRegTrashAlt className='delete-post' onClick = {() => this.handleDelete()}/>
+                </div>
             </div>
         )
     }
 }
 
-function mapStateToProps ({posts}, { id }) {
+function mapStateToProps ({posts, sort}, { id }) {
     const post = Object.values(posts).filter((post) => post.id === id)[0];
   
     return {
-      post: post
-        ? post
-        : null
+        post: post
+            ? post
+            : null,
+        sort
     }
   }
   

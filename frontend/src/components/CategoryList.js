@@ -1,22 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { NavLink, withRouter } from 'react-router-dom'
+import { NavLink, withRouter } from 'react-router-dom';
+import { styles } from '../utils/theme';
+import { MenuList, MenuItem, ListItemText, withStyles } from '@material-ui/core';
 
 class CategoryList extends Component{
     render(){
-        const {categories} = this.props;
-        //console.log(categories)
+        const {categories, classes} = this.props;
         return(
-            <nav>
+            <MenuList>
                 Categories
-                <ul className='category-list'>
                     {categories !== undefined && categories.map((category) => (
-                        <li key={category.path}>
-                            <NavLink to={`/${category.path}`} className='tweet'>{category.name}</NavLink>
-                        </li>
+                        <MenuItem className={classes.menuItem} component={NavLink} to={`/${category.path}`} key={category.path}>
+                            <ListItemText classes={{ primary: classes.primary }} inset primary={category.name} />
+                        </MenuItem>
                     ))}
-                </ul>
-            </nav>
+            </MenuList>
         )
     }
 }
@@ -27,4 +26,4 @@ function mapStateToProps({ categories }){
     };
 }
 
-export default withRouter(connect(mapStateToProps)(CategoryList));
+export default withRouter(withStyles(styles)(connect(mapStateToProps)(CategoryList)));

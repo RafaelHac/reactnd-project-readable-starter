@@ -3,6 +3,9 @@ import { receiveCategories } from '../actions/categories';
 import { showLoading, hideLoading } from 'react-redux-loading';
 import { receivePosts } from './posts';
 
+export const UP_VOTE = "upVote";
+export const DOWN_VOTE = "downVote";
+
 function getInitialData(){
   return Promise.all([
     API.getCategories(),

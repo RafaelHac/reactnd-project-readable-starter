@@ -1,35 +1,62 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link, withRouter } from 'react-router-dom';
-import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
-import { formatDate, UP_VOTE, DOWN_VOTE } from '../utils/helpers';
-import { handleDownVotePost, handleUpVotePost, handleReceivePosts } from '../actions/posts';
-import { handleReceiveComments } from '../actions/comments';
+import { withRouter, Link } from 'react-router-dom';
+import { FaAngleDown, FaAngleUp, FaRegEdit,FaRegTrashAlt } from 'react-icons/fa';
+import { formatDate } from '../utils/helpers';
+import { UP_VOTE, DOWN_VOTE } from '../actions/shared';
+import { 
+    handleReceivePosts, 
+    handleDeletePost,
+    handleDownVotePost, 
+    handleUpVotePost, 
+ } from '../actions/posts';
 import CommentsList from './CommentsList';
-import { handleInitialData } from '../actions/shared';
+import NewComment from './NewComment';
 
 class PostDetails extends Component {
-    
-    handleVote = (vote) => {
-        const {id, dispatch } = this.props;
-        switch(vote){
-            case UP_VOTE:
-                return dispatch(handleUpVotePost(id));
-            case DOWN_VOTE:
-                return dispatch(handleDownVotePost(id));
+    componentDidMount(){
+        if(!this.props.post){
+            this.props.dispatch(handleReceivePosts(this.props.selectedCategory, this.props.sort));
         }
     }
 
+    handleVote = (vote) => {
+        const {post, dispatch } = this.props;
+        switch(vote){
+            case UP_VOTE:
+                return dispatch(handleUpVotePost(post.id));
+            case DOWN_VOTE:
+                return dispatch(handleDownVotePost(post.id));
+            default:
+                return;
+        }
+    }
+
+    handleDelete = () => {
+        const {post, dispatch } = this.props;
+        dispatch(handleDeletePost(post.id));
+    }
+
     render() {
-        const { post } = this.props;
+        const { post, selectedCategory } = this.props;
         if (post === null) {
-            return <p>This Post doesn't exist</p>
+            return (
+                <div className="url-invalida">
+                    <p>This Post doesn't exist!</p>
+                </div>
+            );
+        }
+        else if (post.category !== selectedCategory){
+            return (
+                <div className="url-invalida">
+                    <p>This Post doesn't exist in this category!</p>
+                </div>
+            );
         }
 
         const {
-            author, body, category, commentCount, id, timestamp, title, voteScore
+            author, body, commentCount, id, category, timestamp, title, voteScore
         } = post;
-
         return (
             <div className = 'post'>
                 <div className='post-score'>
@@ -39,12 +66,18 @@ class PostDetails extends Component {
                 </div>
                 <div className='post-info'>
                     <div>
+                        <div className = 'post-category'>Category: {category}</div>
                         <span className = 'post-title'>{title}</span>
                         <div className = 'post-date'>{formatDate(timestamp)}</div>
                         <div className = 'post-author'>Posted by {author}</div>
                         <p>{body}</p>
+                        <FaRegTrashAlt className='delete-post' onClick = {() => this.handleDelete()}/>
+                        <Link to={`/${category}/${id}/edit`}>
+                            <FaRegEdit className='edit-post'/>
+                        </Link>
                         <div className = 'comments-count'>{commentCount !== 0 && (commentCount === 1 ? `${commentCount} Comment` : `${commentCount} Comments`)}</div>
                         <CommentsList/>
+                        <NewComment postId={id}/>
                     </div>
                 </div>
             </div>
@@ -52,16 +85,17 @@ class PostDetails extends Component {
     }
 }
 
-function mapStateToProps ({posts}, props) {
+function mapStateToProps ({posts, sort}, props) {
     const { id, category } = props.match.params;
 
     const post = Object.values(posts).filter((post) => post.id === id)[0];
   
     return {
-        categorySelected: category,
         post: post
             ? post
-            : null
+            : null,
+        selectedCategory: category,
+        sort
     };
   };
   

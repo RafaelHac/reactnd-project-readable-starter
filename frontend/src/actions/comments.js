@@ -1,15 +1,43 @@
 import * as API from '../utils/PostsAPI';
-import  {DOWN_VOTE, UP_VOTE } from '../utils/helpers';
+import { showLoading, hideLoading } from 'react-redux-loading'
+import { newId } from '../utils/helpers';
+import { UP_VOTE, DOWN_VOTE } from '../actions/shared';
 
 export const RECEIVE_COMMENTS = 'RECEIVE_COMMENTS';
+export const ADD_COMMENT = 'ADD_COMMENT';
+export const EDIT_COMMENT = 'EDIT_COMMENT';
+export const DELETE_COMMENT = 'DELETE_COMMENT';
 export const VOTE_COMMENT = 'VOTE_COMMENT';
 
-export function receiveComments (comments, postId) {  
+export function receiveComments (comments, parentId) {  
   return {
       type: RECEIVE_COMMENTS,
       comments,
-      postId
+      parentId
     };
+};
+
+function addComment (comment) {
+  return {
+    type: ADD_COMMENT,
+    comment
+  };
+};
+
+function editComment (id, body){
+  return {
+    type: EDIT_COMMENT,
+    id,
+    body
+  }
+}
+
+function deleteComment (id, parentId) {
+  return {
+    type: DELETE_COMMENT,
+    id,
+    parentId
+  };
 };
 
 function voteComment (id, vote) {  
@@ -20,11 +48,51 @@ function voteComment (id, vote) {
     };
 };
 
-export const handleReceiveComments = (postId) => {
+export const handleReceiveComments = (parentId) => {
   return (dispatch) => {
-    console.log(postId);
-    return API.getCommentsByPost(postId)
-      .then((comments) => dispatch(receiveComments(comments, postId)));
+    return API.getCommentsByPost(parentId)
+      .then((comments) => dispatch(receiveComments(comments, parentId)));
+  };
+};
+
+export function handleAddComment (commentForm, parentId) {
+  if(commentForm.author === ''){
+    commentForm.author = 'Anonymous';
+  }
+  const comment = { ...commentForm, id: newId(), parentId: parentId};
+  
+  return (dispatch) => {
+    dispatch(showLoading());
+    return API.addComment(comment)
+      .then((comment) => {
+        dispatch(addComment(comment))
+        dispatch(hideLoading())
+        return comment
+      });
+  };
+};
+
+export function handleEditComment (id, body) {
+  
+  return (dispatch) => {
+    dispatch(showLoading());
+    return API.editComment(id, body)
+      .then((comment) => {
+        dispatch(editComment(id, body))
+        dispatch(hideLoading())
+        return comment
+      });
+  };
+};
+
+export function handleDeleteComment (commentId) {
+  return (dispatch) => {
+    dispatch(showLoading());
+    return API.deleteComment(commentId)
+      .then((comment) => {
+        dispatch(deleteComment(comment.id, comment.parentId))
+        dispatch(hideLoading())
+      });
   };
 };
 
